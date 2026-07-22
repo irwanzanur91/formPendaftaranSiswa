@@ -1,42 +1,38 @@
-import io
+import base64
+import requests
 import streamlit as st
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-from googleapiclient.http import MediaIoBaseUpload
 
-# --- KONFIGURASI FOLDER GOOGLE DRIVE ---
-FOLDER_ID = "1r9JV9J8p0Fi1yZu-8Vhg6J3SpISdbP_7"
+# --- URL WEB APP GOOGLE APPS SCRIPT ---
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw9IfH7nD--uVDV13MT2hYboS2jZX89HreIJf1hozpFWvKptY57y95JlHPS4__Xo7C8Sw/exec"
 
 
 def upload_ke_google_drive(file_buffer, nama_file, mime_type):
-    # Membaca kredensial dari Secrets Streamlit
-    credentials_info = dict(st.secrets["gcp_service_account"])
+    # Mengubah file gambar menjadi format Base64
+    file_bytes = file_buffer.read()
+    encoded_file = base64.b64encode(file_bytes).decode("utf-8")
 
-    # Menggunakan scope penuh Google Drive
-    creds = service_account.Credentials.from_service_account_info(
-        credentials_info, scopes=["https://www.googleapis.com/auth/drive"]
-    )
-    service = build("drive", "v3", credentials=creds)
+    # Data yang dikirim ke Google Apps Script
+    payload = {
+        "fileName": nama_file,
+        "mimeType": mime_type,
+        "fileData": encoded_file,
+    }
 
-    file_metadata = {"name": nama_file, "parents": [FOLDER_ID]}
+    # Mengirim file melalui HTTP POST
+    response = requests.post(WEB_APP_URL, json=payload)
 
-    media = MediaIoBaseUpload(
-        io.BytesIO(file_buffer.read()), mimetype=mime_type, resumable=True
-    )
-
-    # Mengunggah file dengan dukungan penuh untuk Drive
-    file = (
-        service.files()
-        .create(
-            body=file_metadata,
-            media_body=media,
-            fields="id",
-            supportsAllDrives=True,
+    if response.status_code == 200:
+        result = response.json()
+        if result.get("status") == "success":
+            return result.get("fileId")
+        else:
+            raise Exception(
+                result.get("message", "Terjadi kesalahan pada Google Apps Script.")
+            )
+    else:
+        raise Exception(
+            f"Gagal terhubung ke Google Apps Script (HTTP {response.status_code})"
         )
-        .execute()
-    )
-
-    return file.get("id")
 
 
 # --- TAMPILAN FORM SISWA ---
@@ -70,6 +66,10 @@ if tombol_submit:
                 )
 
             st.success(
+                f"✅ Pendaftaran berhasil! Foto **{nama_file_baru}** telah tersimpan di Google Drive."
+            )
+        except Exception as e:
+            st.error(f"❌ Terjadi kesalahan saat mengunggah: {e}")
                 f"✅ Pendaftaran berhasil! Foto **{nama_file_baru}** telah tersimpan di Google Drive."
             )
         except Exception as e:
