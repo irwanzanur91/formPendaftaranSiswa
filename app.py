@@ -70,7 +70,3 @@ if tombol_submit:
             )
         except Exception as e:
             st.error(f"❌ Terjadi kesalahan saat mengunggah: {e}")
-                f"✅ Pendaftaran berhasil! Foto **{nama_file_baru}** telah tersimpan di Google Drive."
-            )
-        except Exception as e:
-            st.error(f"❌ Terjadi kesalahan saat mengunggah: {e}")
