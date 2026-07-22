@@ -4,14 +4,15 @@ from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 
-# --- KONFIGURASI ---
-FOLDER_ID = "1O6t17zbKHETumlBsNE9jW5n958P23Ntd"
+# --- KONFIGURASI FOLDER GOOGLE DRIVE ---
+FOLDER_ID = "1r9JV9J8p0Fi1yZu-8Vhg6J3SpISdbP_7"
 
 
 def upload_ke_google_drive(file_buffer, nama_file, mime_type):
+    # Membaca kredensial dari Secrets Streamlit
     credentials_info = dict(st.secrets["gcp_service_account"])
 
-    # Menggunakan scope penuh agar bisa mengakses folder yang dibagikan
+    # Menggunakan scope penuh Google Drive
     creds = service_account.Credentials.from_service_account_info(
         credentials_info, scopes=["https://www.googleapis.com/auth/drive"]
     )
@@ -23,9 +24,15 @@ def upload_ke_google_drive(file_buffer, nama_file, mime_type):
         io.BytesIO(file_buffer.read()), mimetype=mime_type, resumable=True
     )
 
+    # Mengunggah file dengan dukungan penuh untuk Drive
     file = (
         service.files()
-        .create(body=file_metadata, media_body=media, fields="id")
+        .create(
+            body=file_metadata,
+            media_body=media,
+            fields="id",
+            supportsAllDrives=True,
+        )
         .execute()
     )
 
