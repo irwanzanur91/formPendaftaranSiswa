@@ -9,11 +9,11 @@ FOLDER_ID = "1O6t17zbKHETumlBsNE9jW5n958P23Ntd"
 
 
 def upload_ke_google_drive(file_buffer, nama_file, mime_type):
-    # Membaca kunci akses langsung dari Streamlit Secrets (Aman!)
     credentials_info = dict(st.secrets["gcp_service_account"])
 
+    # Menggunakan scope penuh agar bisa mengakses folder yang dibagikan
     creds = service_account.Credentials.from_service_account_info(
-        credentials_info, scopes=["https://www.googleapis.com/auth/drive.file"]
+        credentials_info, scopes=["https://www.googleapis.com/auth/drive"]
     )
     service = build("drive", "v3", credentials=creds)
 
