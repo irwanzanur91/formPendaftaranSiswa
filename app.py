@@ -5,7 +5,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload
 
 # --- KONFIGURASI ---
-FOLDER_ID = "1a2b3c4d5e6f7g8h9i0j"
+FOLDER_ID = "1O6t17zbKHETumlBsNE9jW5n958P23Ntd"
 
 
 def upload_ke_google_drive(file_buffer, nama_file, mime_type):
