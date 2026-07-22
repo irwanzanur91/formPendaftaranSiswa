@@ -3,7 +3,7 @@ import requests
 import streamlit as st
 
 # --- URL WEB APP GOOGLE APPS SCRIPT ---
-WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw9IfH7nD--uVDV13MT2hYboS2jZX89HreIJf1hozpFWvKptY57y95JlHPS4__Xo7C8Sw/exec"
+WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyktzMQH2dKkYZgMgEYFON_nw785lq73NqQpbArrc6jecIYxZ7dxe02X36KVSamS4ushQ/exec"
 
 
 def upload_ke_google_drive(file_buffer, nama_file, mime_type):
